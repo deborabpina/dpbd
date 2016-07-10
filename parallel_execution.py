@@ -23,7 +23,7 @@ def create_DB(no,replication,frag_path):
 
 def create_DBs(list_id_bd,replication,frag_path):
 	'''
-	number os the 
+	create the sites where each site represent a database. 
 	list_id_bd =[1,2,3,4]
 	'''
 	for i in list_id_bd:
@@ -32,6 +32,7 @@ def create_DBs(list_id_bd,replication,frag_path):
 
 
 def get_table_script(no,replication):
+
 	if (no==1): 
 		return  "sitio1.sql" if(replication==True) else "sitio1-sem-replicacao.sql"
 	elif (no==2):
@@ -42,6 +43,9 @@ def get_table_script(no,replication):
 		return  "sitio4.sql" if(replication==True)else "sitio4-sem-replicacao.sql"
 
 def get_table_frag_script(node, replication):
+	'''
+	Creates databases whith the fragmented tables
+	'''
 	if(replication==True):
 		if(node==1):
 			return "sitio1r.sql" 
@@ -61,6 +65,10 @@ def get_table_frag_script(node, replication):
 
 
 def run_queries(list_query_files_name):
+	'''
+	Run queries based on  the .sql files found in queries/
+
+	'''
 	for query_file in list_query_files_name:
 		ide = query_file.split("_")[2].split(".")[0]
 		print(ide)
