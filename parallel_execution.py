@@ -15,11 +15,12 @@ def create_DB(no,replication,frag_path):
 	SQL scripts for table creation in bd
 	'''
 	
-	script = get_table_frag_script(no,replication)		
-	subprocess.call("createdb -O postgres -T DPBD db"+str(no),shell=True)
-	print("[+]:filling BD")
-	print("[+]:psql -f "+script)
-	subprocess.call("psql  -f "+frag_path+script+" -d "+"db"+str(no),shell=True)
+	script = get_table_frag_script(no,replication)
+	if(script!="null"):		
+		subprocess.call("createdb -O postgres -T DPBD db"+str(no),shell=True)
+		print("[+]:filling BD")
+		print("[+]:psql -f "+script)
+		subprocess.call("psql  -f "+frag_path+script+" -d "+"db"+str(no),shell=True)
 
 def create_DBs(list_id_bd,replication,frag_path):
 	'''
@@ -60,6 +61,8 @@ def get_table_frag_script(node, replication):
 			return "sitio1sr.sql" 
 		if(node==2):
 			return "sitio2sr.sql"
+		if(node>2):
+			return "null"
 		
 
 
@@ -67,22 +70,23 @@ def get_table_frag_script(node, replication):
 def run_queries(list_query_files_name):
 	'''
 	Run queries based on  the .sql files found in queries/
+	NOT WORKING: TELLING THAT bd don't exist
 
 	'''
 	for query_file in list_query_files_name:
 		ide = query_file.split("_")[2].split(".")[0]
 		print(ide)
-		print("psql -d bd" + str(ide) + " -f "+query_path+query_file + " > " + query_file+".txt")
-		subprocess.call("psql -U jean  -d bd" + str(ide) + " -f queries/"+query_file + " > " + query_file+".txt",shell=True)
+		print("psql -d bd" + str(ide) + " -f "+query_file + " > " + query_file+".txt")
+		subprocess.call("psql  -d bd" + str(ide) + " -f "+query_file + " > " + query_file+".txt",shell=True)
 		
 
-query_path = "/home/jean/SQL projects/DPBD/queries/"
-frag_path = "/home/jean/SQL projects/DPBD/SQL Frag Tables/"
+query_path = "/home/jean/SQL\ projects/DPBD/queries/"
+frag_path = "/home/jean/SQL\ projects/DPBD/SQL\ Frag\ Tables/"
 replication = False
 list_id_bd=[1,2,3,4]
 list_query_files_name=["query_2_2.sql","query_5_1.sql","query_5_2.sql","query_8_1.sql","query_8_2.sql","query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"]
 print("[+]:Creating DB")
-#create_DBs(list_id_bd,replication, frag_path)
+create_DBs(list_id_bd,replication, frag_path)
 print("[+]:DB created")
 print("[+]:Running queries")
 run_queries(list_query_files_name)
