@@ -7,3 +7,7 @@ EXECUTE PARALLEL QUERIES
 
 $ python parallel_execution.py
 
+------------------------------------
+query execution on multiple DATABASE
+------------------------------------
+Use  dblink

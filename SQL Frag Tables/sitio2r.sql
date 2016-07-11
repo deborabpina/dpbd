@@ -5,10 +5,10 @@ CREATE TABLE "scc2-edgecfd".dl_mat4 AS
   SELECT * FROM "scc2-edgecfd".dl_mat WHERE visc > 0.0008;
 
 CREATE TABLE "scc2-edgecfd".oedgecfdpre2 AS
-  SELECT mat.* FROM "scc2-edgecfd".oedgecfdpre AS mat INNER JOIN "scc2-edgecfd".dl_mat2 AS dlmat ON mat.dl_matid=dlmat.rid;
+  SELECT dlmat.visc,mat.* FROM "scc2-edgecfd".oedgecfdpre AS mat INNER JOIN "scc2-edgecfd".dl_mat2 AS dlmat ON mat.dl_matid=dlmat.rid;
 
 CREATE TABLE "scc2-edgecfd".oedgecfdpre4 AS
-  SELECT mat.* FROM "scc2-edgecfd".oedgecfdpre AS mat INNER JOIN "scc2-edgecfd".dl_mat4 AS dlmat ON mat.dl_matid=dlmat.rid;
+  SELECT dlmat.visc,mat.* FROM "scc2-edgecfd".oedgecfdpre AS mat INNER JOIN "scc2-edgecfd".dl_mat4 AS dlmat ON mat.dl_matid=dlmat.rid;
 
 --fragmentação vertical
 CREATE TABLE "scc2-edgecfd".osetsolverconfig1

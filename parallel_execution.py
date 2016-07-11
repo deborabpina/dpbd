@@ -17,19 +17,25 @@ def create_DB(no,replication,frag_path):
 	
 	script = get_table_frag_script(no,replication)
 	if(script!="null"):		
-		subprocess.call("createdb -O postgres -T DPBD db"+str(no),shell=True)
 		print("[+]:filling BD")
 		print("[+]:psql -f "+script)
-		subprocess.call("psql  -f "+frag_path+script+" -d "+"db"+str(no),shell=True)
+		if(replication==False):
+			subprocess.call("createdb -O postgres -T DPBD db"+str(no),shell=True)
+			subprocess.call("psql  -f "+frag_path+script+" -d "+"db"+str(no),shell=True)
+		else:
+			subprocess.call("createdb -O postgres -T DPBD db_rep"+str(no),shell=True)
+			subprocess.call("psql  -f "+frag_path+script+" -d "+"db_rep"+str(no),shell=True)
 
-def create_DBs(list_id_bd,replication,frag_path):
+
+def create_DBs(list_id_bd,frag_path):
 	'''
 	create the sites where each site represent a database. 
 	list_id_bd =[1,2,3,4]
 	'''
 	for i in list_id_bd:
 		print("[+]:creating DB "+str(i))
-		create_DB(i,replication,frag_path)
+		create_DB(i,True,frag_path)
+		create_DB(i,False,frag_path)
 
 
 def get_table_script(no,replication):
@@ -67,26 +73,31 @@ def get_table_frag_script(node, replication):
 
 
 
-def run_queries(list_query_files_name):
+def run_queries(list_query_files_name, list_query_files_name_rep):
 	'''
 	Run queries based on  the .sql files found in queries/
 	NOT WORKING: TELLING THAT bd don't exist
 
 	'''
 	for query_file in list_query_files_name:
-		ide = query_file.split("_")[2].split(".")[0]
-		print(ide)
-		print("psql -d bd" + str(ide) + " -f "+query_file + " > " + query_file+".txt")
-		subprocess.call("psql  -d bd" + str(ide) + " -f "+query_file + " > " + query_file+".txt",shell=True)
+		ide = query_file.split("_")[2].split(".")[0]			
+		print("[+]:psql -d bd" + str(ide) + " -f "+query_path+query_file + " > " + query_file+".txt")
+		subprocess.call("psql  -d db" + str(ide) + " -f "+query_path+query_file + " -o " + query_file+".txt",shell=True)
+	for query_file in list_query_files_name_rep:
+		ide = query_file.split("_")[2]			
+		print("[+]:psql -d bd_rep" + str(ide) + " -f "+query_path+query_file + " > " + query_file+".txt")
+		subprocess.call("psql  -d db_rep" + str(ide) + " -f "+query_path+query_file + " -o " + query_file+".txt",shell=True)
+
 		
 
 query_path = "/home/jean/SQL\ projects/DPBD/queries/"
 frag_path = "/home/jean/SQL\ projects/DPBD/SQL\ Frag\ Tables/"
 replication = False
 list_id_bd=[1,2,3,4]
-list_query_files_name=["query_2_2.sql","query_5_1.sql","query_5_2.sql","query_8_1.sql","query_8_2.sql","query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"]
+list_query_files_name=["query_2_2.sql","query_5_1.sql","query_5_2.sql","query_8_1.sql","query_8_2.sql"]
+list_query_files_name_rep = ["query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"]
 print("[+]:Creating DB")
-create_DBs(list_id_bd,replication, frag_path)
+create_DBs(list_id_bd, frag_path)
 print("[+]:DB created")
 print("[+]:Running queries")
-run_queries(list_query_files_name)
+run_queries(list_query_files_name,list_query_files_name_rep)
