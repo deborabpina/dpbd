@@ -94,10 +94,10 @@ query_path = "/home/jean/SQL\ projects/DPBD/queries/"
 frag_path = "/home/jean/SQL\ projects/DPBD/SQL\ Frag\ Tables/"
 replication = False
 list_id_bd=[1,2,3,4]
-list_query_files_name=["query_2_2.sql","query_5_1.sql","query_5_2.sql","query_8_1.sql","query_8_2.sql"]
-list_query_files_name_rep = ["query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"]
+list_query_files_name=["query_2_2.sql","query_5_1.sql","query_8_1.sql","query_8_2.sql"] #query removida "query_5_2.sql"
+list_query_files_name_rep = ["query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"] # not used
 print("[+]:Creating DB")
-create_DBs(list_id_bd, frag_path)
+#create_DBs(list_id_bd, frag_path)
 print("[+]:DB created")
 print("[+]:Running queries")
 run_queries(list_query_files_name,list_query_files_name_rep)
