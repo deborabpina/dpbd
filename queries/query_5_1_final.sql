@@ -1,3 +1,5 @@
+--TIMING
+\timing
 -- query 5 withou replicaiton on node 1
 (SELECT dat from "scc2-edgecfd".osetsolverconfig1 T1
 INNER JOIN "scc2-edgecfd".oedgecfdpre2 T2 ON (T2.nexttaskid = T1.previoustaskid)

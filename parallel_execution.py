@@ -9,7 +9,7 @@ import subprocess
 #No 5: demais tabelas
 
 
-def create_DB(no,replication,frag_path):
+def create_DB(no,replication,frag_path,db_template):
 	'''
 	create DB with no_id no.
 	SQL scripts for table creation in bd
@@ -20,22 +20,26 @@ def create_DB(no,replication,frag_path):
 		print("[+]:filling BD")
 		print("[+]:psql -f "+script)
 		if(replication==False):
-			subprocess.call("createdb -O postgres -T DPBD db"+str(no),shell=True)
+			db="db"
+			subprocess.call("createdb -O postgres -T "+db_template+" "+db+str(no),shell=True)
+			subprocess.call('psql -d '+db+str(no)+' -c "CREATE EXTENSION dblink"',shell=True)
 			subprocess.call("psql  -f "+frag_path+script+" -d "+"db"+str(no),shell=True)
 		else:
-			subprocess.call("createdb -O postgres -T DPBD db_rep"+str(no),shell=True)
+			db="db_rep"
+			subprocess.call("createdb -O postgres -T "+db_template+ " "+db+str(no),shell=True)
+			subprocess.call('psql -d '+db+str(no)+' -c "CREATE EXTENSION dblink"',shell=True)
 			subprocess.call("psql  -f "+frag_path+script+" -d "+"db_rep"+str(no),shell=True)
 
 
-def create_DBs(list_id_bd,frag_path):
+def create_DBs(list_id_bd,frag_path,db_template):
 	'''
 	create the sites where each site represent a database. 
 	list_id_bd =[1,2,3,4]
 	'''
 	for i in list_id_bd:
 		print("[+]:creating DB "+str(i))
-		create_DB(i,True,frag_path)
-		create_DB(i,False,frag_path)
+		create_DB(i,True,frag_path,db_template)
+		create_DB(i,False,frag_path,db_template)
 
 
 def get_table_script(no,replication):
@@ -88,16 +92,23 @@ def run_queries(list_query_files_name, list_query_files_name_rep):
 		print("[+]:psql -d bd_rep" + str(ide) + " -f "+query_path+query_file + " > " + query_file+".txt")
 		subprocess.call("psql  -d db_rep" + str(ide) + " -f "+query_path+query_file + " -o " + query_file+".txt",shell=True)
 
-		
+def run_final_queries(final_queries):
+	for query_file in final_queries:
+		ide = query_file.split("_")[2]
+		subprocess.call("psql  -d db_rep" + str(ide) + " -f "+query_path+query_file + " -o " + query_file+".txt",shell=True)
 
+		
+db_template = "DPBD"
 query_path = "/home/jean/SQL\ projects/DPBD/queries/"
 frag_path = "/home/jean/SQL\ projects/DPBD/SQL\ Frag\ Tables/"
 replication = False
 list_id_bd=[1,2,3,4]
 list_query_files_name=["query_2_2.sql","query_5_1.sql","query_8_1.sql","query_8_2.sql"] #query removida "query_5_2.sql"
 list_query_files_name_rep = ["query_5_1_rep.sql","query_5_2_rep.sql","query_8_1_rep.sql","query_8_2_rep.sql"] # not used
+final_queries= ["query_2_2_final.sql","query_5_1_final.sql" ,"query_8_1_final.sql","query_5_1_final_rep.sql","query_8_1_final_rep.sql"]
 print("[+]:Creating DB")
-#create_DBs(list_id_bd, frag_path)
+#create_DBs(list_id_bd, frag_path,db_template)
 print("[+]:DB created")
 print("[+]:Running queries")
-run_queries(list_query_files_name,list_query_files_name_rep)
+#run_queries(list_query_files_name,list_query_files_name_rep)
+run_final_queries(final_queries)
